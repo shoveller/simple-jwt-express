@@ -13,5 +13,5 @@ if (require.main === module) {
 
   console.log(verifyToken(accessToken));
   console.log(verifyToken(refreshToken));
-  console.log(verifyToken("검증에 실패하는 토큰은 예외를 발생시킨다"));
+  //   console.log(verifyToken("검증에 실패하는 토큰은 예외를 발생시킨다"));
 }

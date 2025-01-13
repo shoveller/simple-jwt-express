@@ -4,48 +4,43 @@ import express, {
   RequestHandler,
   NextFunction,
 } from "express";
-import jwt from "jsonwebtoken";
-import { algorithm, generateTokens, secretKey } from "./tokens/generate";
+import { generateTokens } from "./tokens/generate";
 import { verifyToken } from "./tokens/verify";
+import { JwtPayload } from "jsonwebtoken";
 
 const app = express();
 app.use(express.json());
 
+type LoginRequest = Request<{}, {}, { username: string }>;
+type LoginResponse = Response<
+  { message: string } | { accessToken: string; refreshToken: string }
+>;
+
 // 로그인 라우트
-app.post("/login", ((req, res) => {
+app.post("/login", ((req: LoginRequest, res: LoginResponse) => {
   const { username } = req.body;
+  // 로그인에 실패하면 잘못된 요청으로 처리
   if (!username) {
     return res.status(400).json({ message: "Username is required" });
   }
 
-  const { accessToken, refreshToken } = generateTokens(username);
-
-  res.json({ accessToken, refreshToken });
+  // 로그인에 성공하면 엑세스 토큰과 리프레시 토큰을 생성해서 반환
+  const tokens = generateTokens(username);
+  res.json(tokens);
 }) as RequestHandler);
-
-// JWT 토큰 페이로드 타입 정의
-type JwtPayload = {
-  // iss (issuer): 토큰 발급자
-  iss?: string;
-  // sub (subject): 토큰 제목 (일반적으로 사용자 식별자)
-  sub?: string;
-  // exp (expiration time): 토큰 만료 시간 (Unix 시간)
-  exp?: number;
-  // iat (issued at): 토큰 발급 시간 (Unix 시간)
-  iat?: number;
-};
 
 export type AuthRequest = Request & {
   user?: JwtPayload;
 };
 
 // JWT 토큰 검증 미들웨어
-const verifyMiddleware = async (
+const verification = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
 ) => {
   const authHeader = req.headers.authorization;
+  // 헤더에 토큰이 없으면 인증에러(401) 응답
   if (!authHeader?.startsWith("Bearer ")) {
     res.status(401).json({ message: "Unauthorized" });
     return;
@@ -63,24 +58,24 @@ const verifyMiddleware = async (
 };
 
 // 보호된 리소스 라우트 시뮬레이션
-app.get("/resource", verifyMiddleware, ((req: AuthRequest, res: Response) => {
+app.get("/resource", verification, (req: AuthRequest, res: Response) => {
   res.json({ message: `Hello, ${req.user?.sub}!` });
-}) as RequestHandler);
+});
 
 // 토큰 갱신 라우트
 app.post("/refresh", ((req: Request, res: Response) => {
-  const { refreshToken: prevRequestToken } = req.body;
-  if (!prevRequestToken) {
+  const { refreshToken } = req.body;
+  if (!refreshToken) {
     return res.status(400).json({ message: "Refresh token is required" });
   }
 
   try {
-    const payload = jwt.verify(prevRequestToken, secretKey, {
-      algorithms: [algorithm],
-    }) as JwtPayload;
-    const { accessToken, refreshToken } = generateTokens(payload.sub!);
-
-    res.json({ accessToken, refreshToken });
+    // 리프레시 토큰을 검증한다
+    const payload = verifyToken(refreshToken);
+    // 리프레시 토큰이 유효하면 새로운 액세스 토큰과 리프레시 토큰을 생성한다
+    const tokens = generateTokens(payload.sub!);
+    // 새로 생성한 토큰을 반환한다
+    res.json(tokens);
   } catch (error) {
     res.status(401).json({ message: "Invalid refresh token" });
   }
