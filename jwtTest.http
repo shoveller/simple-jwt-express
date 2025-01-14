@@ -19,7 +19,7 @@ Content-Type: application/json
 # 헤더:
 #   - Authorization: Bearer 형식의 액세스 토큰 (필수)
 GET http://localhost:3000/resource
-Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9...
+Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ5b3VyLWFwcCIsInN1YiI6IuyCrOyaqeyekOydtOumhCIsImlhdCI6MTczNjg5MjI1MSwiZXhwIjoxNzM2ODk1ODUxfQ.UL9oMO-wkECsQx9vndPrHQadrJIh3UzhDvIjE_PaETknvrBDcCkYF1vueNQwmYrPj3dOw9M4QlrpLXa7_jZTNg
 Content-Type: application/json
 
 
@@ -35,5 +35,5 @@ POST http://localhost:3000/refresh
 Content-Type: application/json
 
 {
-  "refreshToken": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9..."
+  "refreshToken": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ5b3VyLWFwcCIsInN1YiI6IuyCrOyaqeyekOydtOumhCIsImlhdCI6MTczNjg5MTQzMywiZXhwIjoxNzM3NDk2MjMzfQ.Pe467nnkofb56gvaEykD8q6asrQuoRstmhE6FkwW2zRm_3_CB5dD7cfXdzv_F8WLb3T6HMSfDXR9h8CdptNjAg"
 }

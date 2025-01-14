@@ -49,6 +49,7 @@ const verification = async (
   try {
     const token = authHeader.substring(7);
     const payload = verifyToken(token);
+
     req.user = payload;
     next();
   } catch (error) {
