@@ -20,18 +20,17 @@ pnpm i @types/express -D
 vscode 를 사용하는 경우 [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) 를 설치하면 테스트를 쉽게 할 수 있다.
 
 # 토큰 생성
-
-토큰 생성은 HS512(HMAC-SHA512) 알고리즘으로 JWT 문자열을 서명하는 작업이다.
+엑세스 토큰은 사용자의 정보를 base64 로 인코딩하고 HMAC-SHA512 알고리즘으로 암호화한 문자열이다.  
 node.js 에서는 [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) 이라는 모듈을 사용해서 만든다.  
-엑세스 토큰과 리프레시 토큰을 동시에 만들어 반환하면 FE 에서 토큰을 관리하기 쉽다.
-리프레시 토큰은 만료기간이 좀 더 긴 엑세스 토큰이라는 것을 알아가면 좋다.
+리프레시 토큰은 만료기간이 좀 더 긴 엑세스 토큰에 불과하다.  
+엑세스 토큰과 리프레시 토큰을 동시에 만들어 반환하면 FE 에서 토큰을 관리하기 쉽다.  
 
 ```sh
 pnpm i jsonwebtoken
 pnpm i @types/jsonwebtoken -D
 ```
 
-간단한 테스트 코드도 추가했다.
+엑세스 토큰을 생성하는 코드와 리프레시 토큰을 생성하는 코드는 아래와 같다.  
 
 ```ts
 import crypto from "node:crypto";
